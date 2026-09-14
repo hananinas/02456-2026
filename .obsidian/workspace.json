@@ -99,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md",
+                "file": "Week1 Feedforward Pen and Paper/Week 1 recap of ML.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "README.md",
+                "file": "Week1 Feedforward Pen and Paper/Week 1 recap of ML.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -161,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md",
+                "file": "Week1 Feedforward Pen and Paper/Week 1 recap of ML.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -188,8 +188,9 @@
       "bases:Create new base": false
     }
   },
-  "active": "d444c331f7a3b758",
+  "active": "0fc0d221dc021f09",
   "lastOpenFiles": [
-    "Week1 Feedforward Pen and Paper/Week 1 recap of ML.md"
+    "Week1 Feedforward Pen and Paper/Week 1 recap of ML.md",
+    "README.md"
   ]
 }

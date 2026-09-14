@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<!-- ==================================================================
+     LONG DOCUMENT · English · parchment design system
+     Multi-page A4 white paper / tech report / annual review
+     Flow: cover -> toc -> exec summary -> chapters -> appendix
+     ================================================================== -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>02456 · Exam notes 2025</title>
+<meta name="author" content="Study notes">
+<meta name="description" content="Four-page revision notes with formulas, worked examples and pitfalls for all ten questions in the 2025 DTU Deep Learning exam.">
+<meta name="keywords" content="deep learning, PyTorch, backpropagation, convolution, attention">
+<meta name="generator" content="Kami">
+<style>
+  /* Palatino is a system font, no @font-face needed */
+  @font-face { font-family: "JetBrains Mono"; src: url("file:///home/hanan/.agents/skills/kami/assets/fonts/JetBrainsMono.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+  @font-face { font-family: "JetBrains Mono"; src: url("file:///home/hanan/.agents/skills/kami/assets/fonts/JetBrainsMono.woff2") format("woff2"); font-weight: 500; font-style: normal; }
+
+  @page {
+    size: A4;
+    margin: 20mm 22mm 22mm 22mm;
+    background: #f5f4ed;
+
+    @top-right {
+      content: string(section-title);
+      font-family: Charter, Georgia, Palatino, serif;
+      font-size: 8pt;
+      color: #6b6a64;
+    }
+
+    @bottom-center {
+      content: counter(page) "  ·  02456 · Exam notes 2025";
+      font-family: Charter, Georgia, Palatino, serif;
+      font-size: 9pt;
+      color: #6b6a64;
+    }
+  }
+  @page:first {
+    @top-right { content: ""; }
+    @bottom-center { content: ""; }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --parchment: #f5f4ed;
+    --ivory:     #faf9f5;
+    --near-black:#141413;
+    --dark-warm: #3d3d3a;
+    --olive:     #504e49;
+    --stone:     #6b6a64;
+    --brand:     #1B365D;
+    --border:    #e8e6dc;
+    --border-soft:#e5e3d8;
+    --tag-bg:    #E4ECF5;
+
+    --serif: Charter, Georgia,
+             Palatino, "Times New Roman", serif;
+    --sans: var(--serif);
+    --mono:  "JetBrains Mono", "SF Mono", "Fira Code",
+             Consolas, Monaco, monospace;
+  }
+
+  html, body { background: var(--parchment); }
+
+  @media screen {
+    body { max-width: 210mm; margin: 0 auto; padding: 20mm 22mm 22mm 22mm; }
+  }
+
+  body {
+    color: var(--near-black);
+    font-family: var(--serif);
+    font-size: 10.5pt;
+    line-height: 1.55;
+  }
+
+  .sans { font-family: var(--sans); }
+
+  /* COVER */
+  .cover {
+    min-height: 240mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40mm 0 0 0;
+    break-after: page;
+  }
+  .cover-eyebrow {
+    font-family: var(--sans);
+    font-size: 10pt;
+    color: var(--brand);
+    letter-spacing: 2pt;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 18pt;
+  }
+  .cover-title {
+    font-size: 40pt;
+    font-weight: 500;
+    color: var(--near-black);
+    line-height: 1.12;
+    letter-spacing: -0.5pt;
+    margin-bottom: 16pt;
+  }
+  .cover-sub {
+    font-family: var(--sans);
+    font-size: 14pt;
+    color: var(--olive);
+    line-height: 1.45;
+    max-width: 85%;
+    margin-bottom: 30pt;
+  }
+  .cover-meta {
+    font-family: var(--sans);
+    font-size: 10pt;
+    color: var(--stone);
+    line-height: 1.55;
+    font-variant-numeric: tabular-nums;
+  }
+  .cover-meta strong { color: var(--dark-warm); font-weight: 500; }
+
+  /* TOC */
+  .toc { break-after: page; }
+  .toc h2 {
+    font-size: 22pt;
+    font-weight: 500;
+    margin-bottom: 14pt;
+    border-left: 2.5pt solid var(--brand);
+    border-radius: 1.5pt;
+    padding-left: 8pt;
+  }
+  .toc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6pt 0;
+    border-bottom: 0.3pt dotted var(--border);
+    font-size: 11pt;
+  }
+  .toc-num {
+    color: var(--brand);
+    font-weight: 500;
+    min-width: 30pt;
+    font-variant-numeric: tabular-nums;
+  }
+  .toc-title {
+    flex: 1;
+    color: var(--near-black);
+    padding-left: 6pt;
+  }
+  .toc-page {
+    color: var(--stone);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* HEADINGS */
+  h1 {
+    font-size: 24pt;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.3pt;
+    margin: 0 0 10pt 0;
+    border-left: 2.5pt solid var(--brand);
+    border-radius: 1.5pt;
+    padding-left: 8pt;
+    color: var(--near-black);
+    break-after: avoid;
+  }
+  h2 {
+    font-size: 16pt;
+    font-weight: 500;
+    line-height: 1.25;
+    margin: 24pt 0 6pt 0;
+    color: var(--near-black);
+    break-after: avoid;
+    string-set: section-title content();
+  }
+  h3 {
+    font-size: 13pt;
+    font-weight: 500;
+    line-height: 1.3;
+    margin: 18pt 0 4pt 0;
+    color: var(--dark-warm);
+    break-after: avoid;
+  }
+
+  .chapter-num {
+    font-family: var(--sans);
+    font-size: 10pt;
+    color: var(--brand);
+    letter-spacing: 1pt;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 6pt;
+  }
+
+  /* PARAGRAPHS */
+  p { margin: 0 0 10pt 0; line-height: 1.55; color: var(--near-black); }
+
+  .lead {
+    font-size: 12pt;
+    line-height: 1.55;
+    color: var(--dark-warm);
+    margin-bottom: 14pt;
+  }
+
+  .hl { color: var(--brand); font-weight: 500; }
+  strong { font-weight: 500; }
+
+  /* LISTS */
+  ul, ol {
+    margin: 6pt 0 10pt 0;
+    padding-left: 20pt;
+    line-height: 1.55;
+  }
+  ul li::marker { color: var(--brand); }
+  ol li::marker { color: var(--brand); font-weight: 500; }
+
+  /* QUOTE */
+  blockquote, .quote {
+    border-left: 2pt solid var(--brand);
+    margin: 12pt 0;
+    padding: 4pt 0 4pt 16pt;
+    color: var(--olive);
+    line-height: 1.55;
+    break-inside: avoid;
+  }
+  blockquote .cite, .quote .cite {
+    display: block;
+    font-family: var(--sans);
+    font-size: 9pt;
+    color: var(--stone);
+    margin-top: 4pt;
+  }
+
+  /* CODE */
+  code {
+    font-family: var(--mono);
+    font-size: 9pt;
+    background: var(--ivory);
+    padding: 1pt 4pt;
+    border-radius: 2pt;
+    color: var(--dark-warm);
+  }
+  pre {
+    font-family: var(--mono);
+    font-size: 9pt;
+    line-height: 1.5;
+    background: var(--ivory);
+    border: 0.5pt solid var(--border-soft);
+    border-radius: 4pt;
+    padding: 10pt 14pt;
+    margin: 10pt 0;
+    white-space: pre-wrap;
+    color: var(--near-black);
+    break-inside: avoid;
+  }
+  pre code { background: transparent; padding: 0; font-size: inherit; }
+
+  /* TABLE (kami-table) */
+  table, .kami-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    margin: 12pt 0;
+    break-inside: avoid;
+  }
+  table th, .kami-table th {
+    text-align: left;
+    font-family: var(--sans);
+    font-weight: 500;
+    color: var(--dark-warm);
+    padding: 6pt 8pt;
+    border-bottom: 1pt solid var(--border);
+    background: var(--ivory);
+  }
+  table td, .kami-table td {
+    padding: 5pt 8pt;
+    border-bottom: 0.3pt solid var(--border-soft);
+    vertical-align: top;
+  }
+  table.compact th, .kami-table.compact th { padding: 3pt 6pt; font-size: 8pt; }
+  table.compact td, .kami-table.compact td { padding: 2pt 6pt; font-size: 8pt; line-height: 1.4; }
+  table.financial td:not(:first-child), .kami-table.financial td:not(:first-child) {
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+  table.financial th:not(:first-child), .kami-table.financial th:not(:first-child) { text-align: right; }
+  table.striped tbody tr:nth-child(even) td, .kami-table.striped tbody tr:nth-child(even) td {
+    background: var(--ivory);
+  }
+  table .total td, .kami-table .total td {
+    font-weight: 500; border-top: 1pt solid var(--brand); border-bottom: none; color: var(--near-black);
+  }
+
+  /* CALLOUT / TAKEAWAY */
+  .callout {
+    background: var(--ivory);
+    border-left: 2pt solid var(--brand);
+    padding: 10pt 14pt;
+    border-radius: 3pt;
+    margin: 12pt 0;
+    line-height: 1.55;
+    break-inside: avoid;
+  }
+  .takeaway {
+    background: var(--ivory);
+    border: 0.5pt solid var(--border);
+    border-radius: 4pt;
+    padding: 10pt 14pt;
+    margin: 14pt 0;
+    break-inside: avoid;
+  }
+  .takeaway-label {
+    font-family: var(--sans);
+    font-size: 9pt;
+    color: var(--brand);
+    letter-spacing: 1pt;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 4pt;
+  }
+
+  /* TAG */
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--brand);
+    font-family: var(--sans);
+    font-size: 9pt;
+    font-weight: 500;
+    padding: 1pt 6pt;
+    border-radius: 3pt;
+    letter-spacing: 0.4pt;
+    text-transform: uppercase;
+    margin-right: 4pt;
+  }
+
+  /* FIGURE */
+  figure { margin: 14pt 0; break-inside: avoid; }
+  figure img { max-width: 100%; border-radius: 4pt; }
+  figcaption {
+    font-family: var(--sans);
+    font-size: 9pt;
+    color: var(--stone);
+    margin-top: 6pt;
+    text-align: center;
+  }
+
+  /* CHAPTER BREAK */
+  .chapter { break-before: page; }
+
+  /* Dense four-page revision layout; retain the template's design tokens. */
+  @page { margin: 15mm 18mm 17mm; }
+  body { font-size: 10pt; line-height: 1.42; }
+  p { line-height: 1.42; margin-bottom: 7pt; }
+  h1 { font-size: 22pt; margin-bottom: 8pt; }
+  h2 { font-size: 14pt; margin-top: 15pt; margin-bottom: 5pt; }
+  pre { line-height: 1.4; padding: 7pt 10pt; margin: 7pt 0; }
+  .callout, .takeaway { padding: 7pt 10pt; margin: 8pt 0; line-height: 1.42; }
+  table { margin: 8pt 0; }
+  table th, table td { padding: 4pt 6pt; }
+</style>
+</head>
+<body>
+<section>
+<div class="chapter-num">02456 Deep Learning · 2025 exam notes · 1 / 4</div>
+<h1>Dense networks &amp; backpropagation</h1>
+<p>Based on all 10 questions in the DTU written exam, 10 December 2025. Worked answers are derived here, not an official answer key. These notes cover this paper, not the full course syllabus.</p>
+<h2>Q1–2 · Count connections; track dimensions</h2>
+<p>For a dense layer with <span class="hl">d inputs and h outputs</span>, each output has d weights and one bias. Parameters = dh + h = (d + 1)h. Sum over layers; input nodes, ReLU and softmax add no trainable parameters. Batch size never changes the count.</p>
+<div class="callout">Q1: architecture 2 → 4 → 3.<br>Weights: 2 × 4 + 4 × 3 = 20. Biases: 4 + 3 = 7.<br>Total = <span class="hl">27 parameters → D</span>.</div>
+<p>With column vectors, z = Wx + b uses W of shape [out, in]. For a batch X of shape [B, in], PyTorch computes XWᵀ + b and returns [B, out]. <code>nn.Linear(in, out)</code> stores its weight as [out, in].</p>
+<p>Q2: architecture 3 → 4 → 2, so W<sup>(1)</sup> is 4 × 3 and W<sup>(2)</sup> is 2 × 4. Therefore <span class="hl">n = 4, m = 3, k = 2, ℓ = 4 → B</span>. Check: (2 × 4)(4 × 1) produces a 2 × 1 output.</p>
+<h2>Q3 · Forward first, then multiply local derivatives</h2>
+<p>Given z = wx, h = ReLU(z), y = vh and L = ½(y − t)²:</p>
+<div class="callout">∂L/∂w = (y − t) · v · 1[z &gt; 0] · x<br>∂L/∂v = (y − t) · h</div>
+<p>Q3: x = 1, t = 6, w = 2, v = 4. Forward: z = 2, h = 2, y = 8, L = 2. Backward: (8 − 6) × 4 × 1 × 1 = <span class="hl">8 → C</span>.</p>
+<p>ReLU′(z) = 1 for z &gt; 0 and 0 for z &lt; 0; at z = 0 it is not differentiable (PyTorch uses 0). An inactive ReLU blocks the gradient along that path. At a branch, add gradient contributions from every downstream path.</p>
+<p><span class="hl">Traps:</span> forgetting v or x; differentiating before the forward pass; keeping a factor of 2 despite the ½ in the loss. For L = (y − t)² without ½, the gradient doubles. Gradient descent uses w ← w − η ∂L/∂w.</p>
+</section>
+<section class="chapter">
+<div class="chapter-num">02456 Deep Learning · 2025 exam notes · 2 / 4</div>
+<h1>PyTorch outputs &amp; losses</h1>
+<h2>Q4 · Flatten images without flattening the batch</h2>
+<p>Input [B, 3, 10, 10] has 300 features per image. Required path: [B, 300] → [B, 128] → [B, 128] → [B, 5].</p>
+<pre><code>model = nn.Sequential(
+    nn.Flatten(),                 # start_dim=1: keep B
+    nn.Linear(300, 128), nn.ReLU(),
+    nn.Linear(128, 128), nn.ReLU(),
+    nn.Linear(128, 5), nn.Softmax(dim=1)
+)</code></pre>
+<p><span class="hl">Q4 → D.</span> Linear acts on the last dimension; it does not flatten images automatically. <code>Flatten(128)</code> means “start at dimension 128”, not “make 128 features”.</p>
+<h2>Q7 · Cross-entropy takes logits, not probabilities</h2>
+<p>For C classes: model output [B, C]; integer targets [B] with dtype <code>torch.long</code> and values 0,…,C−1. Cross-entropy combines log-softmax and negative log-likelihood:</p>
+<p class="hl">L = −log softmax(z)<sub>t</sub> = −z<sub>t</sub> + log ∑<sub>j</sub> exp(z<sub>j</sub>)</p>
+<pre><code>model = nn.Sequential(nn.Linear(10, 32), nn.ReLU(),
+                      nn.Linear(32, 3))
+loss_fn = nn.CrossEntropyLoss()  # Q7 → A</code></pre>
+<p>Q4 includes softmax because it asks for a classifier, not its training loss. When using CrossEntropyLoss, remove that final softmax. For inference, use <code>logits.softmax(dim=1)</code>; <code>argmax(dim=1)</code> selects the same class with or without softmax.</p>
+<h2>Q9 · Predict an unrestricted mean and positive scale</h2>
+<p>Use 5 → 16 → 2 with ReLU only in the hidden layer. Interpret y[:,0] as μ and y[:,1] as s = log σ; then σ = exp(s) &gt; 0.</p>
+<pre><code>def gaussian_nll(y, target):
+    mu, s = y[:, 0], y[:, 1]       # both [B]
+    return (s + 0.5 * ((target-mu)*torch.exp(-s))**2).mean()</code></pre>
+<p><span class="hl">Q9 → D:</span> L = log σ + ½((t − μ)/σ)², ignoring a constant. A predicts only a mean; B applies Softplus to both outputs, incorrectly restricting the mean to positive values for a general Gaussian; C permits non-positive σ.</p>
+<p><span class="hl">Watch:</span> s = log σ is not log variance. For r = log σ², use ½[r + (t − μ)² exp(−r)]. Match target and prediction shapes: [B,1] − [B] can silently broadcast to [B,B].</p>
+</section>
+<section class="chapter">
+<div class="chapter-num">02456 Deep Learning · 2025 exam notes · 3 / 4</div>
+<h1>Convolutions &amp; attention</h1>
+<h2>Q5 · Slide, multiply, sum</h2>
+<p>A standard deep-learning convolution uses cross-correlation: do not flip the kernel. Each output sums elementwise patch × kernel products across spatial positions and input channels; then adds one bias if enabled.</p>
+<pre><code>X = [[1, 2, 0, 1],       K = [[1, 0],
+     [1, 0, 1, 0],            [0, 1]]
+     [1, 0, 2, 2],
+     [0, 2, 1, 1]]</code></pre>
+<p>Q5: stride 2, padding 0, no bias. Four 2 × 2 patches start at (row, column) = (0,0), (0,2), (2,0), (2,2). K adds each patch’s diagonal: 1 + 0, 0 + 0, 1 + 2, 2 + 1.</p>
+<p class="hl">Output = [[1, 0], [3, 3]] → C.</p>
+<h2>Q6 · Output shape and parameter count</h2>
+<div class="callout">For either spatial axis:<br>size<sub>out</sub> = floor((size<sub>in</sub> + 2p − d(k − 1) − 1) / s) + 1<br>p = padding per side; d = dilation (default 1); k = kernel size; s = stride.</div>
+<p>Q6: input [5,5,5], 10 kernels of shape [5,3,3], p = 1, s = 2. Spatial size = floor((5 + 2 − 3)/2) + 1 = 3. Output channels equal the number of kernels: <span class="hl">[10,3,3] → B</span>.</p>
+<p>For ordinary convolution (groups = 1), parameters = C<sub>out</sub>C<sub>in</sub>k<sub>H</sub>k<sub>W</sub> + C<sub>out</sub> biases if enabled. Q6 has no bias: 10 × 5 × 3 × 3 = 450. Spatial output positions reuse weights; they do not multiply the parameter count.</p>
+<h2>Q8 · Attention is a weighted average of values</h2>
+<p>Q: [N<sub>q</sub>,d<sub>k</sub>], K: [N<sub>k</sub>,d<sub>k</sub>], V: [N<sub>k</sub>,d<sub>v</sub>]. Scores QKᵀ have shape [N<sub>q</sub>,N<sub>k</sub>]. Apply softmax across keys within each row, then multiply by V; output shape is [N<sub>q</sub>,d<sub>v</sub>].</p>
+<pre><code>Q = [[1,1,0], [0,0,1]]   K = [[1,0,0], [1,0,0]]
+V = [[2,0,6,0], [0,4,0,8]]
+Q @ K.T = [[1,1], [0,0]]
+softmax(scores, dim=-1) = [[0.5,0.5], [0.5,0.5]]
+A = [[1,2,3,4], [1,2,3,4]]                     # Q8 → C</code></pre>
+<p><span class="hl">Equal scores give uniform weights—even all-zero scores.</span> Each row sums to 1. This exam uses non-scaled attention; standard scaled attention uses QKᵀ/√d<sub>k</sub>. Softmax is exp(z<sub>i</sub>)/∑ exp(z<sub>j</sub>); subtracting the row maximum improves numerical stability without changing it.</p>
+</section>
+<section class="chapter">
+<div class="chapter-num">02456 Deep Learning · 2025 exam notes · 4 / 4</div>
+<h1>Sequence models &amp; final checks</h1>
+<h2>Q10 · Many-to-one means one prediction per sequence</h2>
+<p>For unbatched one-hot input [T,V], <code>nn.LSTM(V,32)</code> returns <code>out</code> of shape [T,32] and <code>(h_n,c_n)</code>, each [1,32] for one layer and one direction. Use the final time step, then project 32 hidden features to 3 logits.</p>
+<pre><code>class MyLSTM(nn.Module):
+    def __init__(self, V):
+        super().__init__()
+        self.lstm = nn.LSTM(V, 32)
+        self.linear = nn.Linear(32, 3)
+
+    def forward(self, x):
+        out, (h_n, c_n) = self.lstm(x)
+        return self.linear(out[-1])  # [32] → [3]</code></pre>
+<p><span class="hl">Q10 → A.</span> <code>out[-1]</code> selects the final step; <code>out[:-1]</code> selects all but the final step. The LSTM module itself cannot be indexed as a sequence. Returning only out[-1] leaves 32 features, not 3 class logits.</p>
+<p>For a portable loss call with the exam’s target [1], explicitly batch the logits: <code>loss_fn(model(x).unsqueeze(0), target)</code>, giving [1,3] and [1]. The conventional unbatched pairing is logits [3] and a scalar class target.</p>
+<p>With batches, the default LSTM input is [T,B,V]; <code>batch_first=True</code> uses [B,T,V], so select <code>out[:, -1, :]</code>. For padded unequal-length sequences, the last array position may be padding, not the last valid token.</p>
+<h2>Worked answer map</h2>
+<table>
+<thead><tr><th>Question</th><th>Choice</th><th>Decisive check</th></tr></thead>
+<tbody>
+<tr><td>1 / 2</td><td>D / B</td><td>27 parameters / W shapes 4×3 and 2×4</td></tr>
+<tr><td>3 / 4</td><td>C / D</td><td>Gradient 8 / flatten to 300 features</td></tr>
+<tr><td>5 / 6</td><td>C / B</td><td>[[1,0],[3,3]] / output [10,3,3]</td></tr>
+<tr><td>7 / 8</td><td>A / C</td><td>Raw logits + cross-entropy / uniform averaging</td></tr>
+<tr><td>9 / 10</td><td>D / A</td><td>Log standard deviation / final state + classifier</td></tr>
+</tbody>
+</table>
+<div class="takeaway"><div class="takeaway-label">Before choosing an answer</div>
+Trace every tensor shape → count weights and biases separately → check loss factors → check output constraints → check the reduction axis. Compute the result before matching a multiple-choice option.</div>
+<p style="font-size:9pt;color:var(--stone)">Source: 02456_exam_2025.pdf, pp. 1–5. Question references follow the supplied paper. “Don’t know” and scoring rules depend on the separate answer sheet, which was not supplied.</p>
+</section>
+</body>
+</html>
