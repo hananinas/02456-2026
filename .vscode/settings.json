@@ -1,0 +1,4 @@
+{
+  "python.defaultInterpreterPath": "/home/hanan/anaconda3/envs/deep/bin/python",
+  "jupyter.interactiveWindow.creationMode": "perFile"
+}
